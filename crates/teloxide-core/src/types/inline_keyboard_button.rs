@@ -12,6 +12,9 @@ pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
 
+    /// Colour of the button (Bot API 9.4). `None` keeps the client default.
+    pub style: Option<ButtonStyle>,
+
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
 }
@@ -105,13 +108,32 @@ pub enum InlineKeyboardButtonKind {
     Pay(True),
 }
 
+/// Colour of an inline keyboard button (Bot API 9.4).
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ButtonStyle {
+    /// Blue.
+    Primary,
+    /// Green.
+    Success,
+    /// Red.
+    Danger,
+}
+
 impl InlineKeyboardButton {
+    /// Sets the button's colour.
+    #[must_use]
+    pub fn style(mut self, style: ButtonStyle) -> Self {
+        self.style = Some(style);
+        self
+    }
+
     /// Creates a new `InlineKeyboardButton`.
     pub fn new<S>(text: S, kind: InlineKeyboardButtonKind) -> Self
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), style: None, kind }
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
